@@ -1,12 +1,17 @@
-import mongoose from "mongoose";
-import { DB_NAME } from "./constants.js"; 
+// import mongoose from "mongoose";
+// import { DB_NAME } from "./constants.js"; 
+
 import dotenv from "dotenv";
+dotenv.config({
+    path: './.env'
+});
+
 import connectDB from "./db/index.js";
 
-
+// console.log("URI:", process.env.MONGODB_URI);
 connectDB()
 
-dotenv.config();
+
 
 
 // import express from "express"
