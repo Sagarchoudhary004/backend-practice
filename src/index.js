@@ -10,7 +10,15 @@ import connectDB from "./db/index.js";
 
 // console.log("URI:", process.env.MONGODB_URI);
 connectDB()
-
+.then (()=>{
+    app.listen(process.env.PORT ||4000,()=>{
+        console.log(`server is running at  port : ${process.env.PORT}`);
+    })
+})
+.catch((err)=>{
+    console.log("DB Connection Error",err);
+    
+})
 
 
 
