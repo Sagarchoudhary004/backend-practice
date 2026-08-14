@@ -1,22 +1,67 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { User } from "../models/user.model.js";
+import {uploadOnCloudinary} from "../utils/cloudinary"
 
-const registerUser = asyncHandler( async (req, res) => {
-    // get user detail from frontend
-    // validation - not empty
-    // check if user alredy exists: username,email
-    // check for images, check for avtar
-    // uplod them to cloudinary,avtar
-    // create user object - create entry in db
-    // remove password and refresh token field from response
-    // check for user creation
-    // return response
+const registerUser = asyncHandler(async (req, res) => {
+  // get user detail from frontend
+  // validation - not empty
+  // check if user alredy exists: username,email
+  // check for images, check for avtar
+  // uplod them to cloudinary,avtar
+  // create user object - create entry in db
+  // remove password and refresh token field from response
+  // check for user creation
+  // return response
+
+  const { fullName, email, username, password } = req.body;
+  console.log("email:", email);
+
+  // this is for velidation first one is the advance code that check all the empty string and the
+  // second comment code in noral code that check one by one this is only check the
+  // full name fild you have to check the email then yo have to add the another
+  // if statement
+  if (
+    [fullName, email, username, password].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  //  if(fullName === ""){
+  //     throw new ApiError(400,"full name is required")
+  //  }
+
+  //this is check the user is alredy exist or not
+  const existedUser = User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (existedUser) {
+    throw new ApiError(409, "User with email or username alredy exist");
+  }
+
+  // in this step we chek image and check avtar
+
+const avatarLocalPath = req.files?.avtar[0]?.path;
+const coverImage = req.files?.coverImage[0]?.path;
 
 
+ if(!avtarLocalPath){
+    throw new ApiError(400, "Avtar file is required")
+ }
 
-     const{fullName, email, username, password}= req.body
-     console.log("email:",email );
-     
+ //uplod the avtar in the cloudinary
 
-})
+ const avatar = await uploadOnCloudinary(avatarLocalPath)
+const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-export {registerUser}
+if(!avatar){
+    throw new ApiError(400, "Avtar file is required")
+ }
+
+ //create and object and enter in the database
+ 
+
+});
+
+export { registerUser };
