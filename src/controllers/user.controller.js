@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import {uploadOnCloudinary} from "../utils/cloudinary"
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -33,7 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
   //  }
 
   //this is check the user is alredy exist or not
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ username }, { email }],
   });
 
@@ -43,21 +43,23 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // in this step we chek image and check avtar
 
-const avatarLocalPath = req.files?.avtar[0]?.path;
-const coverImage = req.files?.coverImage[0]?.path;
+const avatarLocalPath = req.files?.avatar?.[0]?.path;
+const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
 
- if(!avtarLocalPath){
-    throw new ApiError(400, "Avtar file is required")
+ if(!avatarLocalPath){
+    throw new ApiError(400, "Avatar file is required")
  }
 
  //uplod the avtar in the cloudinary
 
  const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+console.log("Cloudinary Avatar Response:", avatar);
 const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
 if(!avatar){
-    throw new ApiError(400, "Avtar file is required")
+    throw new ApiError(400, "Avatar file is required")
  }
 
  //create and object and enter in the database
