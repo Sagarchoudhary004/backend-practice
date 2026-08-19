@@ -120,7 +120,7 @@ const loginUser = asyncHandler(async (req, res) =>{
    //find the user 
    // passwerd check
    // accrss and refresh token
-   // send cookies
+   // send cookies 
 
    const {email, username, password} = req.body
 
@@ -147,9 +147,30 @@ const loginUser = asyncHandler(async (req, res) =>{
     generateAccessAndRefreshToken(user._id)
 
 
-    
+   const loggedInUser = User.findById(user._id).
+   select("-password -refreshToken")
 
+   const options = {
+      httpOnly: true,
+      secure: true
+   }
+   return res
+   .status(200)
+   .cookie("accessToken", accessToken, options)
+   .cookie("refreshToken", refreshToken, options)
+   .json(
+      new ApiResponse(
+         200,
+         {
+            user: loggedInUser, accessToken,
+            refreshToken
+         },
+         "user logged in successfully"
+      )
+   )
 })
+
+const 
 
 export {
    registerUser,
