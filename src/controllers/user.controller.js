@@ -242,9 +242,52 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+
+const changCurrentPassword = asyncHandler(async (req, res) =>{
+  const {oldPassword, newPassword} = req.body
+
+  const user = await user.findById(req.user?.id)
+  const isPasswordCorrect = await user.
+  isPasswordCorrect(oldPassword)
+
+if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalidmold Password")
+}
+
+
+  user.password = newPassword
+  await user.save({validateBeforeSave: false})
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200,{},"Password change successfully"))
+
+})
+
+const getCurrentUser = asyncHandler(async(req, res)=>{
+  return res.status(200)
+  .json(200, req.user, "Current user fetch successfully")
+})
+
+const updateAccountDetail = asyncHandler(async(req, res)=>{
+  const {fullName, email} = req.body
+
+
+  if (!fullName || !email) {
+    throw new ApiError(400, "All filds are required")
+    
+  }
+
+  User.findByIdAndUpdate(req.user?.id)
+
+})
+
+
 export {
     registerUser, 
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changCurrentPassword,
+    getCurrentUser
     };
